@@ -1,17 +1,18 @@
-CREATE TABLE IF NOT EXISTS Genre (
+CREATE TABLE IF NOT EXISTS genre (
 	genre_id serial PRIMARY KEY,
-	genre_name VARCHAR(60) NOT NULL
+	genre_name VARCHAR(60) NOT NULL UNIQUE 
 );
 
-CREATE TABLE IF NOT EXISTS Musician (
+CREATE TABLE IF NOT EXISTS musician (
 	musician_id SERIAL PRIMARY KEY,
-	name_ VARCHAR(50) NOT NULL
+	musician_name VARCHAR(50) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS Album (
+CREATE TABLE IF NOT EXISTS album (
 	album_id SERIAL PRIMARY KEY,
-	name_ VARCHAR(60) NOT NULL,
-	year_ DATE NOT NULL
+	album_name VARCHAR(60) NOT NULL,
+	album_year INTEGER NOT NULL
+	CHECK (album_year > 1925)
 );
 
 CREATE TABLE IF NOT EXISTS genre_musician (
@@ -26,17 +27,18 @@ CREATE TABLE IF NOT EXISTS album_musician (
 	CONSTRAINT pk_a_m PRIMARY KEY (album_id, musician_id)
 );
 
-CREATE TABLE IF NOT EXISTS Track (
+CREATE TABLE IF NOT EXISTS track (
 	track_id SERIAL PRIMARY KEY,
-	name_ VARCHAR(100) NOT NULL,
-	duration NUMERIC(4, 2) NOT NULL,
+	track_name VARCHAR(100) NOT NULL,
+	duration INTEGER NOT NULL,
 	album_id INTEGER REFERENCES Album(album_id)
+	CHECK (duration > 0)
 );
 
-CREATE TABLE IF NOT EXISTS Collection (
+CREATE TABLE IF NOT EXISTS collection (
 	collection_id SERIAL PRIMARY KEY,
 	collection_name VARCHAR(100) NOT NULL,
-	year_ DATE NOT NULL
+	collection_year INTEGER NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS track_coll (
@@ -44,6 +46,3 @@ CREATE TABLE IF NOT EXISTS track_coll (
 	collection_id INTEGER REFERENCES Collection(collection_id),
 	CONSTRAINT pk_t_c PRIMARY KEY (track_id, collection_id)
 );
-
-
-	
