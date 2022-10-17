@@ -1,6 +1,6 @@
 -- сколько исполнителей в каждом жанре.
 
-SELECT genre_name, COUNT(*) FROM genre_musician gm 
+SELECT genre_name, COUNT(*) FROM genre_musician gm
 LEFT JOIN genre g ON g.genre_id = gm.genre_id
 GROUP BY genre_name
 
@@ -17,14 +17,17 @@ SELECT album_name, AVG(duration) AS sec_duration FROM album a
 LEFT JOIN track t ON t.album_id  = a.album_id 
 GROUP BY album_name  
 
--- все исполнители, которые не выпустили альбомы в 2020 году.
+-- все исполнители, которые не выпустили альбомы в 2020 году. Скорректировано.
 
 SELECT musician_name, album_year FROM album_musician am
 LEFT JOIN musician m ON m.musician_id = am.musician_id 
 LEFT JOIN album a ON a.album_id = am.album_id 
-WHERE a.album_year != 2020
-GROUP BY m.musician_name, a.album_year
-ORDER BY a.album_year ASC
+WHERE m.musician_name NOT IN (SELECT DISTINCT musician_name FROM musician m 
+						LEFT JOIN album_musician am2 ON m.musician_id = am2.musician_id 
+						LEFT JOIN album a ON a.album_id = am2.album_id 
+						WHERE album_year = 2020)
+ORDER BY m.musician_name 
+
 
 -- названия сборников, в которых присутствует Queen.
 
@@ -35,7 +38,7 @@ JOIN album a ON t.album_id = a.album_id
 JOIN album_musician am ON a.album_id = am.album_id 
 JOIN musician m ON m.musician_id = am.musician_id 
 WHERE m.musician_name = 'Queen'
-GROUP BY c.collection_name
+
 
 -- название альбомов, в которых присутствуют исполнители более 1 жанра;
 
@@ -55,14 +58,14 @@ GROUP BY t.track_name
 HAVING COUNT(tc.collection_id) = 0
 
 
--- исполнителя(-ей), написавшего самый короткий по продолжительности трек (теоретически таких треков может быть несколько);
+-- исполнителя(-ей), написавшего самый короткий по продолжительности трек (теоретически таких треков может быть несколько); Скорректировано.
 
 SELECT musician_name, t.duration FROM musician m 
 JOIN album_musician am ON m.musician_id = am.musician_id 
 JOIN album a ON a.album_id = am.album_id 
 JOIN track t ON t.album_id = a.album_id 
 WHERE duration = (SELECT MIN(duration) FROM track)
-GROUP BY m.musician_name, t.duration 
+
 
 
 -- название альбомов, содержащих наименьшее количество треков.
@@ -76,6 +79,8 @@ HAVING COUNT(*) = (SELECT count(track_id)
 					GROUP BY a.album_name
 					ORDER BY COUNT(*) asc 
 					LIMIT 1)
+
+
 
 
 
